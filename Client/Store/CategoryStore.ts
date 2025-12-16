@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/Utils/API';
+import { axiosInstance } from '../Utils/API';
 import { create } from 'zustand';
 
 type categortSet = {
@@ -22,7 +22,7 @@ const useCategoryStore = create<Store>((set) => ({
     getAllCategory: async () => {
         try {
             const response = await axiosInstance.get(
-                'https://mzhltj56-4000.inc1.devtunnels.ms/api/recipe/getAllCaategory'
+                'api/recipe/getAllCaategory'
             );
             set({ categories: response.data.category });
         } catch (error) {

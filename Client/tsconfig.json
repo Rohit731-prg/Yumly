@@ -9,8 +9,8 @@
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.{ts,js}",
+    "src/**/*.{tsx,jsx}",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]

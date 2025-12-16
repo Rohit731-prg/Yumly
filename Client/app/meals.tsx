@@ -8,11 +8,12 @@ import {
   ScrollView,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import useCategoryStore from "@/Store/CategoryStore";
+import useCategoryStore from "../Store/CategoryStore";
 import { router } from "expo-router";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import useRecipeStore from "@/Store/RecipeStore";
+import useRecipeStore from "../Store/RecipeStore";
 import { useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function Meals() {
   const { category } = useCategoryStore();
@@ -22,8 +23,8 @@ function Meals() {
     await getAllRecipeByCategory();
   };
 
-  const setRecipeFun = async (id: string) => {
-    await setRecipe(id);
+  const setRecipeFun = async (item: any) => {
+    await setRecipe(item);
     router.push("/meal");
   }
 
@@ -31,103 +32,130 @@ function Meals() {
     fetchData();
   }, []);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Pressable onPress={() => router.push("/home")} style={styles.back}>
-        <Feather name="arrow-left" size={24} color="black" />
-      </Pressable>
-
-      <Text>{category?.strCategory}</Text>
-      <View style={styles.searchBox}>
-        <View style={styles.iconInput}>
-          <EvilIcons name="search" size={24} color="black" />
-          <TextInput placeholder="Enter the recipe name" />
-        </View>
-        <Pressable style={styles.searchBtn}>
-          <Text>Search</Text>
-        </Pressable>
-      </View>
-
-      <View>
-        {recipes?.map((item) => (
-          <Pressable key={item?.idMeal} style={styles.itemBox} onPress={() => setRecipeFun(item?.idMeal)}>
-            <View style={styles.innerView}>
-              <Image
-                source={{ uri: item?.strMealThumb }}
-                style={styles.images}
-              />
-              <Text style={styles.text}>{item?.strMeal}</Text>
-            </View>
-            <Feather name="arrow-right" size={24} color="black" />
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable onPress={() => router.push("/home")} style={styles.back}>
+            <Feather name="arrow-left" size={22} color="#111827" />
           </Pressable>
-        ))}
-      </View>
-    </ScrollView>
+
+          <Text style={styles.headerText}>{category?.strCategory}</Text>
+        </View>
+
+        {/* Search */}
+        <View style={styles.searchBox}>
+          <EvilIcons name="search" size={22} color="#6B7280" />
+          <TextInput
+            placeholder="Search recipes"
+            placeholderTextColor="#9CA3AF"
+            style={styles.searchInput}
+          />
+        </View>
+
+        {/* List */}
+        <View style={styles.list}>
+          {recipes?.map((item) => (
+            <Pressable
+              key={item.idMeal}
+              style={styles.card}
+              onPress={() => setRecipeFun(item)}
+            >
+              <Image source={{ uri: item.strMealThumb }} style={styles.image} />
+
+              <View style={styles.cardContent}>
+                <Text style={styles.title} numberOfLines={2}>
+                  {item.strMeal}
+                </Text>
+              </View>
+
+              <Feather name="chevron-right" size={22} color="#9CA3AF" />
+            </Pressable>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+
+
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+
   container: {
     padding: 20,
-    backgroundColor: "#d6d5d0ff",
-    minHeight: "100%",
+    backgroundColor: "#FFFFFF",
   },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
   back: {
-    padding: 5,
-    backgroundColor: "white",
-    marginBottom: 10,
+    padding: 8,
+    borderRadius: 999,
+    backgroundColor: "#F3F4F6",
+    marginRight: 12,
   },
+
   headerText: {
-    fontWeight: "bold",
-    fontSize: 30,
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#111827",
   },
+
   searchBox: {
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 999,
-    alignItems: "center",
-    flexDirection: "row",
-    backgroundColor: "white",
-    justifyContent: "space-between",
-  },
-  iconInput: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#F9FAFB",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 20,
   },
-  categoryIndex: {
-    padding: 10,
-    marginHorizontal: 5,
-    backgroundColor: "white",
-    borderRadius: 5,
+
+  searchInput: {
+    marginLeft: 8,
+    fontSize: 15,
+    color: "#111827",
+    flex: 1,
   },
-  searchBtn: {
-    backgroundColor: "white",
-    paddingHorizontal: 5,
-    borderRadius: 999,
-    paddingVertical: 5,
+
+  list: {
+    gap: 12,
   },
-  itemBox: {
-    backgroundColor: "white",
+
+  card: {
     flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     padding: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+
+  image: {
+    width: 90,
+    height: 70,
     borderRadius: 10,
-    marginBottom: 5,
-    justifyContent: "space-between",
-    alignItems: "center"
+    marginRight: 12,
   },
-  innerView: {
-    flexDirection: "row",
-    alignItems: "flex-start"
+
+  cardContent: {
+    flex: 1,
   },
-  images: {
-    width: 150,
-    height: 100,
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  text: {
-    fontSize: 10,
-    fontWeight: "medium",
+
+  title: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#111827",
   },
 });
 
