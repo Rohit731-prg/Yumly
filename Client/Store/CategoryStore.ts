@@ -22,9 +22,9 @@ const useCategoryStore = create<Store>((set) => ({
     getAllCategory: async () => {
         try {
             const response = await axiosInstance.get(
-                'https://www.themealdb.com/api/json/v1/1/categories.php'
+                'https://mzhltj56-4000.inc1.devtunnels.ms/api/recipe/getAllCaategory'
             );
-            set({ categories: response.data.categories });
+            set({ categories: response.data.category });
         } catch (error) {
             console.log(error);
         }
