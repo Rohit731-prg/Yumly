@@ -5,6 +5,7 @@ import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useUserStore from "../../Store/UserStore";
 
 type categortSet = {
     idCategory: string,
@@ -13,6 +14,7 @@ type categortSet = {
 }
 
 function Home() {
+    const { user } = useUserStore();
     const { categories, getAllCategory, setCategory } = useCategoryStore();
 
     const fetchData = async () => {
@@ -31,7 +33,7 @@ function Home() {
     return (
         <SafeAreaView>
             <View style={{ padding: 10 }}>
-                <Text>Hello there</Text>
+                <Text>Hello {user?.name.split(" ")[0]}</Text>
                 <Text style={styles.headerlinks}>What would you like to cook today ?</Text>
 
                 <View style={styles.searchBox}>

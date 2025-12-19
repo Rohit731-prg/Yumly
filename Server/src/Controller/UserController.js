@@ -1,4 +1,3 @@
-import LikeRecipeModel from "../Model/LikeRecipeModel.js";
 import SaveRecipeModel from "../Model/SaveRecipeModel.js";
 import UserModel from "../Model/UserModel.js";
 import { compair, generatePassword } from "../Utils/bcriptPassword.js";
@@ -61,10 +60,7 @@ export const authenticate = async (req, res) => {
             user: user?._id
         });
         await newSaveRecipe.save();
-        const newLikeRecipe = new LikeRecipeModel({
-            user: user?._id
-        });
-        await newLikeRecipe.save();
+        
         res.status(200).json({ message: "User authenticate successfully" });
     } catch (error) {
         return res.status(500).json({ message: error?.message });

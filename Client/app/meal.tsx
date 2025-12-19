@@ -2,7 +2,8 @@
 import useRecipeStore, { recipeStruct } from "../Store/RecipeStore"
 import { View, Image, Text, StyleSheet, ScrollView, Pressable } from "react-native"
 import { useEffect } from "react";
-
+import { WebView } from "react-native-webview";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 function Meal() {
   const { recipeDetail, setRecipeDetail } = useRecipeStore();
@@ -16,7 +17,12 @@ function Meal() {
       <Image source={{ uri: recipeDetail?.strMealThumb }} style={style.image} />
 
       <View style={style.card}>
-        <Text style={style.title}>{recipeDetail?.strMeal}</Text>
+        <View>
+          <Text style={style.title}>{recipeDetail?.strMeal}</Text>
+          <Pressable >
+            <EvilIcons name="share-apple" size={24} color="black" />
+          </Pressable>
+        </View>
         <Text style={style.meta}>
           {recipeDetail?.strCategory} • {recipeDetail?.strArea}
         </Text>
@@ -25,11 +31,18 @@ function Meal() {
         <Text style={style.bodyText}>{recipeDetail?.strInstructions}</Text>
 
         <Text style={style.sectionTitle}>Video</Text>
-        <Pressable>
-          <Text style={style.linkText}>
-            {recipeDetail?.strYoutube ? "Watch on YouTube" : "No video available"}
-          </Text>
-        </Pressable>
+        {recipeDetail?.strYoutube && (
+          <View style={{ height: 220, marginTop: 16 }}>
+            <WebView
+              source={{
+                uri: `https://www.youtube-nocookie.com/embed/${recipeDetail.strYoutube}?rel=0&modestbranding=1`,
+              }}
+              allowsFullscreenVideo
+              javaScriptEnabled
+            />
+          </View>
+        )}
+
 
         <Text style={style.sectionTitle}>Ingredients</Text>
 
@@ -73,6 +86,7 @@ const style = StyleSheet.create({
     marginTop: -20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    marginBottom: 20,
   },
 
   title: {

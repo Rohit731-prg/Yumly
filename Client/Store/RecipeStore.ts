@@ -71,7 +71,7 @@ type Store = {
     setRecipeDetail: () => Promise<void>
 }
 
-const useRecipeStore = create<Store>()((set) => ({
+const useRecipeStore = create<Store>()((set, get) => ({
     recipes: null,
     recipe: null,
     recipeDetail: null,
@@ -95,9 +95,21 @@ const useRecipeStore = create<Store>()((set) => ({
 
     setRecipeDetail: async () => {
         try {
+            const format =
+                /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+
             const id = useRecipeStore.getState().recipe?.idMeal;
             const response = await axiosInstance.get(`https://x8wzk6t6-3000.inc1.devtunnels.ms/api/recipe/getMealsByID/${id}`);
-            set({ recipeDetail: response?.data?.meal })
+            const youtubeUrl = response?.data?.meal?.strYoutube;
+            const match = youtubeUrl?.match(format);
+            const videoId = match?.[1]; // 👈 THIS is what we need
+
+            set({
+                recipeDetail: {
+                    ...response?.data?.meal,
+                    strYoutube: videoId, // store ONLY the ID
+                },
+            });
         } catch (error: any) {
             console.log(error?.message);
         }
