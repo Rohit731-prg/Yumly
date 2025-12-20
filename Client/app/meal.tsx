@@ -17,7 +17,7 @@ function Meal() {
       <Image source={{ uri: recipeDetail?.strMealThumb }} style={style.image} />
 
       <View style={style.card}>
-        <View>
+        <View style={style.header}>
           <Text style={style.title}>{recipeDetail?.strMeal}</Text>
           <Pressable >
             <EvilIcons name="share-apple" size={24} color="black" />
@@ -86,6 +86,13 @@ const style = StyleSheet.create({
     marginTop: -20,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    marginBottom: 20,
+  },
+
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
 

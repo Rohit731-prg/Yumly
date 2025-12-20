@@ -88,8 +88,15 @@ function Login() {
 
                 {/* Footer */}
                 <Text style={styles.footerText}>
-                    Don’t have an account? <Text style={styles.link}>Sign up</Text>
+                    Don’t have an account?{" "}
+                    <Text
+                        style={styles.link}
+                        onPress={() => router.push("/signup")}
+                    >
+                        Sign up
+                    </Text>
                 </Text>
+
             </View>
         </ScrollView>
     );

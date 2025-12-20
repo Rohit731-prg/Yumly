@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { axiosInstance } from '../Utils/API';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 interface UserInterface {
     name: string,
@@ -17,14 +19,12 @@ interface loginInterface {
 
 type Store = {
     user: null | UserInterface,
-    token: null | string,
 
     login: (data: loginInterface) => Promise<boolean>
 }
 
 const useUserStore = create<Store>()((set) => ({
     user: null,
-    token: null,
     login: async (data: loginInterface) => {
         try {
             const response = await axiosInstance.post("api/user/login", {
@@ -32,7 +32,7 @@ const useUserStore = create<Store>()((set) => ({
                 password: data.password
             });
             const token = response.data.token;
-            set({ token });
+            await AsyncStorage.setItem('token', token);
             set({ user: response.data.user });
             return true;
         } catch (error: any) {
