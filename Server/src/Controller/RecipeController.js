@@ -36,3 +36,38 @@ export const getMealDataByID = async (req, res) => {
         res.status(500).json({ message: error?.message });
     }
 }
+
+export const getAllCountryName = async (req, res) => {
+    try {
+        const response = await axios.get("https://www.themealdb.com/api/json/v1/1/list.php?a=list");
+        const data = response?.data?.meals;
+        res.status(200).json({ response: data });
+    } catch (error) {
+        res.status(500).json({ message: error?.message });
+    }
+};
+
+export const getRecipeByCountry = async (req, res) => {
+    const { country } = req.body;
+    if (!country) return res.status(400).json({ message: "Country name is require "});
+    try {
+        const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/filter.php?a=${country}`);
+        const data = response?.data?.meals;
+        res.status(200).json({ response: data });
+    } catch (error) {
+        res.status(500).json({ message: error?.message });
+    }
+}
+
+export const getRecipesByName = async (req, res) => {
+    const { name } = req.body;
+    try {
+        const response = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${name}`);
+        if (response) {
+            const data = response?.data?.meals;
+            return res.status(200).json({ response: data });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error?.message });
+    }
+}

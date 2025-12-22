@@ -27,11 +27,11 @@ export default function AutoFood() {
         };
         const result = await getResponse(data);
         if (result) {
-            setLoading(false);
             setSelectedFoods([]);
             setTime("");
             setPeople("");
         }
+        setLoading(false);
     };
 
     return (

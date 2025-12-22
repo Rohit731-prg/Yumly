@@ -1,47 +1,43 @@
 import {
   View,
-  Text,
-  Pressable,
-  TextInput,
-  StyleSheet,
-  Image,
   ScrollView,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Image,
 } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
-import useCategoryStore from "../Store/CategoryStore";
-import { router } from "expo-router";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import useRecipeStore from "../Store/RecipeStore";
-import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { router } from "expo-router";
+import useRecipeStore from "../../Store/RecipeStore";
+import useSaveRecipeStore from "../../Store/SaveRecipeStore";
+import Feather from "@expo/vector-icons/Feather";
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 
-function Meals() {
-  const { category } = useCategoryStore();
-  const { getAllRecipeByCategory, recipes, setRecipe } = useRecipeStore();
-
-  const fetchData = async () => {
-    await getAllRecipeByCategory();
-  };
-
+function saveRecipe() {
+  const { saveRecipes, getSaveRecipe } = useSaveRecipeStore();
+  const { setRecipe } = useRecipeStore();
   const setRecipeFun = async (item: any) => {
     await setRecipe(item);
     router.push("/meal");
-  }
+  };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getSaveRecipe();
+
+      return () => {
+        // optional cleanup when screen loses focus
+      };
+    }, [])
+  );
+
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={() => router.push("/home")} style={styles.back}>
-            <Feather name="arrow-left" size={22} color="#111827" />
-          </Pressable>
-
-          <Text style={styles.headerText}>{category?.strCategory}</Text>
-        </View>
+        <Text style={styles.headerText}>Get Foods easily with saved files</Text>
 
         {/* Search */}
         <View style={styles.searchBox}>
@@ -55,23 +51,27 @@ function Meals() {
 
         {/* List */}
         <View style={styles.list}>
-          {recipes?.map((item) => (
-            <Pressable
-              key={item.idMeal}
-              style={styles.card}
-              onPress={() => setRecipeFun(item)}
-            >
-              <Image source={{ uri: item.strMealThumb }} style={styles.image} />
+          {saveRecipes &&
+            saveRecipes?.map((item) => (
+              <Pressable
+                key={item.idMeal}
+                style={styles.card}
+                onPress={() => setRecipeFun(item)}
+              >
+                <Image
+                  source={{ uri: item.strMealThumb }}
+                  style={styles.image}
+                />
 
-              <View style={styles.cardContent}>
-                <Text style={styles.title} numberOfLines={2}>
-                  {item.strMeal}
-                </Text>
-              </View>
+                <View style={styles.cardContent}>
+                  <Text style={styles.title} numberOfLines={2}>
+                    {item.strMeal}
+                  </Text>
+                </View>
 
-              <Feather name="chevron-right" size={22} color="#9CA3AF" />
-            </Pressable>
-          ))}
+                <Feather name="chevron-right" size={22} color="#9CA3AF" />
+              </Pressable>
+            ))}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -88,13 +88,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#FFFFFF",
   },
-
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-
   back: {
     padding: 8,
     borderRadius: 999,
@@ -116,6 +109,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 20,
+    marginTop: 10,
   },
 
   searchInput: {
@@ -157,4 +151,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Meals;
+export default saveRecipe;

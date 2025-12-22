@@ -27,7 +27,7 @@ export const signUp = async (req, res) => {
     
     try {
         const is_exist = await UserModel.findOne({ email });
-        if (is_exist) res.status(400).json({ message: "User already exist" });
+        if (is_exist) return res.status(400).json({ message: "User already exist" });
 
         const hashPassword = await generatePassword(password);
         const imageData = req.upload;

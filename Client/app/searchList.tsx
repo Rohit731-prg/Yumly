@@ -1,36 +1,17 @@
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from "react-native";
-import Feather from "@expo/vector-icons/Feather";
-import useCategoryStore from "../Store/CategoryStore";
-import { router } from "expo-router";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { View, ScrollView, Pressable, Text, TextInput, Image, StyleSheet } from "react-native"
 import useRecipeStore from "../Store/RecipeStore";
-import { useEffect } from "react";
+import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Feather from "@expo/vector-icons/Feather";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 
-function Meals() {
-  const { category } = useCategoryStore();
-  const { getAllRecipeByCategory, recipes, setRecipe } = useRecipeStore();
+function SearchList() {
+    const { recipes, setRecipe, name } = useRecipeStore();
+    const setRecipeFun = async (item: any) => {
+        await setRecipe(item);
+        router.push("/meal");
+      }
 
-  const fetchData = async () => {
-    await getAllRecipeByCategory();
-  };
-
-  const setRecipeFun = async (item: any) => {
-    await setRecipe(item);
-    router.push("/meal");
-  }
-
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -40,7 +21,7 @@ function Meals() {
             <Feather name="arrow-left" size={22} color="#111827" />
           </Pressable>
 
-          <Text style={styles.headerText}>{category?.strCategory}</Text>
+          <Text style={styles.headerText}>{name}</Text>
         </View>
 
         {/* Search */}
@@ -75,7 +56,7 @@ function Meals() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -157,4 +138,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Meals;
+export default SearchList

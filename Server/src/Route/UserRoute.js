@@ -7,7 +7,7 @@ const route = express.Router();
 
 route.post("/login",  login);
 route.post("/signup", upload.single("image"), uploadImage, signUp);
-route.post("/auth", authenticate);
+route.put("/auth", authenticate);
 route.get("/me", verify, me);
 
 export default route;

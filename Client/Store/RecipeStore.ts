@@ -8,6 +8,11 @@ type recipe = {
     idMeal: string,
 }
 
+type country = {
+    strArea: string
+}
+
+
 export type recipeStruct = {
     idMeal: string,
     strMeal: string,
@@ -65,10 +70,18 @@ export type recipeStruct = {
 type Store = {
     recipes: null | [recipe],
     recipe: null | recipe,
+    name: null | string,
+
+    countryList: null | [country],
+
     recipeDetail: null | recipeStruct
     getAllRecipeByCategory: () => Promise<void>,
     setRecipe: (data: recipe) => void,
-    setRecipeDetail: () => Promise<void>
+    setRecipeDetail: () => Promise<void>,
+
+    getCountryName: () => Promise<void>,
+    getRecipeByCountry: (country: string) => Promise<void>,
+    getRecipeByName: (name: string) => Promise<boolean>
 }
 
 const useRecipeStore = create<Store>()((set, get) => ({
@@ -76,11 +89,15 @@ const useRecipeStore = create<Store>()((set, get) => ({
     recipe: null,
     recipeDetail: null,
 
+    name: null,
+
+    countryList: null,
 
     getAllRecipeByCategory: async () => {
+        set({ recipes: null });
         try {
             const category = useCategoryStore.getState().category?.strCategory;
-            const response = await axiosInstance.post("https://x8wzk6t6-3000.inc1.devtunnels.ms/api/recipe/getMealsByCategory", {
+            const response = await axiosInstance.post("api/recipe/getMealsByCategory", {
                 category
             });
             set({ recipes: response?.data?.recipes })
@@ -94,12 +111,13 @@ const useRecipeStore = create<Store>()((set, get) => ({
     },
 
     setRecipeDetail: async () => {
+        set({ recipeDetail: null });
         try {
             const format =
                 /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
 
             const id = useRecipeStore.getState().recipe?.idMeal;
-            const response = await axiosInstance.get(`https://x8wzk6t6-3000.inc1.devtunnels.ms/api/recipe/getMealsByID/${id}`);
+            const response = await axiosInstance.get(`api/recipe/getMealsByID/${id}`);
             const youtubeUrl = response?.data?.meal?.strYoutube;
             const match = youtubeUrl?.match(format);
             const videoId = match?.[1]; // 👈 THIS is what we need
@@ -114,6 +132,46 @@ const useRecipeStore = create<Store>()((set, get) => ({
             console.log(error?.message);
         }
     },
+
+    getCountryName: async () => {
+        try {
+            const response = await axiosInstance.get("api/recipe/getCountryName");
+            if (response) {
+                set({ countryList: response?.data?.response });
+            }
+        } catch (error: any) {
+            alert(error?.response?.data?.message || error?.message)
+        }
+    },
+    
+    getRecipeByCountry: async (country: string) => {
+        set({ recipes: null });
+        try {
+            const response = await axiosInstance.post("api/recipe/getRecipeByCountry", {
+                country: country
+            });
+            if (response) {
+                set({ recipes: response?.data?.response });
+            }
+        } catch (error: any) {
+            alert(error?.response?.data?.message || error?.message)
+        }
+    },
+
+    getRecipeByName: async (name: string) => {
+        set({ recipes: null });
+        set({ name: null });
+        try {
+            const response = await axiosInstance.post("api/recipe/getRecipeByName", {
+                name: name
+            });
+            set({ recipes: response?.data?.response, name: name });
+            return true
+        } catch (error: any) {
+            alert(error?.response?.data?.message || error?.message);
+            return false;
+        }
+    }
 }));
 
 export default useRecipeStore;

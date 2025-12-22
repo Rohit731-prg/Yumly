@@ -7,6 +7,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
+          title: "Home",
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "home" : "home-outline"}
@@ -17,10 +18,24 @@ export default function TabLayout() {
         }}
       />
 
+      <Tabs.Screen
+        name="saveRecipe"
+        options={{
+          title: "Save",
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? "bookmark" : "bookmark-outline"}
+              size={24}
+              color="black"
+            />
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="auto_food"
         options={{
+          title: "AI Foo",
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "hardware-chip" : "hardware-chip-outline"}
@@ -33,6 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="account"
         options={{
+          title: "Account",
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? "person" : "person-outline"}

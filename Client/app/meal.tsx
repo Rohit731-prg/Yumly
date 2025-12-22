@@ -1,71 +1,96 @@
 // import { SafeAreaView } from "react-native-safe-area-context";
-import useRecipeStore, { recipeStruct } from "../Store/RecipeStore"
-import { View, Image, Text, StyleSheet, ScrollView, Pressable } from "react-native"
+import useRecipeStore, { recipeStruct } from "../Store/RecipeStore";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { useEffect } from "react";
 import { WebView } from "react-native-webview";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
+import useSaveRecipeStore from "../Store/SaveRecipeStore";
+import LottieView from "lottie-react-native";
+import loading from "../assets/loading1.json";
 
 function Meal() {
   const { recipeDetail, setRecipeDetail } = useRecipeStore();
+  const { updateSaveRecipe } = useSaveRecipeStore();
 
   useEffect(() => {
     setRecipeDetail();
   }, []);
 
   return (
-    <ScrollView style={style.screen}>
-      <Image source={{ uri: recipeDetail?.strMealThumb }} style={style.image} />
+    <ScrollView style={style.screen} contentContainerStyle={{ flexGrow: 1 }}
+>
+      {recipeDetail ? (
+        <View>
+          <Image
+            source={{ uri: recipeDetail?.strMealThumb }}
+            style={style.image}
+          />
 
-      <View style={style.card}>
-        <View style={style.header}>
-          <Text style={style.title}>{recipeDetail?.strMeal}</Text>
-          <Pressable >
-            <EvilIcons name="share-apple" size={24} color="black" />
-          </Pressable>
-        </View>
-        <Text style={style.meta}>
-          {recipeDetail?.strCategory} • {recipeDetail?.strArea}
-        </Text>
-
-        <Text style={style.sectionTitle}>Description</Text>
-        <Text style={style.bodyText}>{recipeDetail?.strInstructions}</Text>
-
-        <Text style={style.sectionTitle}>Video</Text>
-        {recipeDetail?.strYoutube && (
-          <View style={{ height: 220, marginTop: 16 }}>
-            <WebView
-              source={{
-                uri: `https://www.youtube-nocookie.com/embed/${recipeDetail.strYoutube}?rel=0&modestbranding=1`,
-              }}
-              allowsFullscreenVideo
-              javaScriptEnabled
-            />
-          </View>
-        )}
-
-
-        <Text style={style.sectionTitle}>Ingredients</Text>
-
-        {Array.from({ length: 20 }).map((_, index) => {
-          const ingredientKey = `strIngredient${index + 1}` as keyof recipeStruct;
-          const measureKey = `strMeasure${index + 1}` as keyof recipeStruct;
-
-          const ingredient = recipeDetail?.[ingredientKey];
-          const measure = recipeDetail?.[measureKey];
-
-          if (!ingredient) return null;
-
-          return (
-            <View key={index} style={style.row}>
-              <Text style={style.ingredient}>{ingredient}</Text>
-              <Text style={style.measure}>{measure}</Text>
+          <View style={style.card}>
+            <View style={style.header}>
+              <Text style={style.title}>{recipeDetail?.strMeal}</Text>
+              <Pressable
+                onPress={() => updateSaveRecipe(recipeDetail?.idMeal as string)}
+              >
+                <EvilIcons name="share-apple" size={24} color="black" />
+              </Pressable>
             </View>
-          );
-        })}
-      </View>
-    </ScrollView>
+            <Text style={style.meta}>
+              {recipeDetail?.strCategory} • {recipeDetail?.strArea}
+            </Text>
 
-  )
+            <Text style={style.sectionTitle}>Description</Text>
+            <Text style={style.bodyText}>{recipeDetail?.strInstructions}</Text>
+
+            <Text style={style.sectionTitle}>Video</Text>
+            {recipeDetail?.strYoutube && (
+              <View style={{ height: 220, marginTop: 16 }}>
+                <WebView
+                  source={{
+                    uri: `https://www.youtube-nocookie.com/embed/${recipeDetail.strYoutube}?rel=0&modestbranding=1`,
+                  }}
+                  allowsFullscreenVideo
+                  javaScriptEnabled
+                />
+              </View>
+            )}
+
+            <Text style={style.sectionTitle}>Ingredients</Text>
+
+            {Array.from({ length: 20 }).map((_, index) => {
+              const ingredientKey = `strIngredient${
+                index + 1
+              }` as keyof recipeStruct;
+              const measureKey = `strMeasure${index + 1}` as keyof recipeStruct;
+
+              const ingredient = recipeDetail?.[ingredientKey];
+              const measure = recipeDetail?.[measureKey];
+
+              if (!ingredient) return null;
+
+              return (
+                <View key={index} style={style.row}>
+                  <Text style={style.ingredient}>{ingredient}</Text>
+                  <Text style={style.measure}>{measure}</Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      ) : (
+        <View style={style.containerFail}>
+          <LottieView source={loading} autoPlay loop style={style.loader} />
+        </View>
+      )}
+    </ScrollView>
+  );
 }
 
 const style = StyleSheet.create({
@@ -148,7 +173,18 @@ const style = StyleSheet.create({
     color: "#6B7280",
     textAlign: "right",
   },
+
+  containerFail: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff", // optional, but helps debug
+  },
+
+  loader: {
+    width: 200,
+    height: 200,
+  },
 });
 
-
-export default Meal
+export default Meal;
