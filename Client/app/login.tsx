@@ -7,12 +7,12 @@ import {
     Pressable,
 } from "react-native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUserStore from "../Store/UserStore";
 import { router } from "expo-router";
 
 function Login() {
-    const { login } = useUserStore();
+    const { login, loginWithAuth } = useUserStore();
     const [loading, setLoading] = useState(false);
     const [userDetails, setUserDetails] = useState({
         email: "",
@@ -31,6 +31,19 @@ function Login() {
             alert("Login Failed");
         }
     };
+
+    const autoLogin = async () => {
+        const result = await loginWithAuth();
+        if (result) {
+            router.push("/(tabs)/home");
+        } else {
+            return;
+        }
+    }
+
+    useEffect(() => {
+        autoLogin();
+    }, []);
 
     return (
         <ScrollView
@@ -82,7 +95,7 @@ function Login() {
                 <Text style={styles.forgot}>Forgot password?</Text>
 
                 {/* Login Button */}
-                <Pressable style={styles.button} onPress={handleLogin}>
+                <Pressable style={styles.button} onPress={handleLogin} disabled={loading}>
                     <Text style={styles.buttonText}>{loading ? "Loading..." : "Login"}</Text>
                 </Pressable>
 

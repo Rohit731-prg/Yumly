@@ -17,14 +17,34 @@ interface loginInterface {
     password: string
 }
 
-type Store = {
-    user: null | UserInterface,
-
-    login: (data: loginInterface) => Promise<boolean>
+export interface ImageFile {
+    uri: string;
+    name: string;
+    type: string;
 }
 
-const useUserStore = create<Store>()((set) => ({
+
+interface signupInterface {
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+    image: ImageFile
+}
+
+type Store = {
+    user: null | UserInterface,
+    email: null | string,
+    login: (data: loginInterface) => Promise<boolean>,
+    signUp: (data: signupInterface) => Promise<boolean>,
+    authentication: (otp: string) => Promise<boolean>,
+    loginWithAuth: () => Promise<boolean>
+}
+
+const useUserStore = create<Store>()((set, get) => ({
     user: null,
+    email: "Saikat@gmail.com",
+
     login: async (data: loginInterface) => {
         try {
             const response = await axiosInstance.post("api/user/login", {
@@ -36,6 +56,58 @@ const useUserStore = create<Store>()((set) => ({
             set({ user: response.data.user });
             return true;
         } catch (error: any) {
+            alert(error);
+            return false;
+        }
+    },
+
+    signUp: async (data: signupInterface) => {
+        try {
+            console.log(data);
+            const newForm = new FormData();
+            newForm.append("name", data.name);
+            newForm.append("email", data.email);
+            newForm.append("password", data.password);
+            const response = await axiosInstance.post("api/user/signup", newForm, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            set({ email: data.email, user: null });
+            alert(response.data.message || "User created successfully");
+            return true;
+        } catch (error: any) {
+            console.log("SIGNUP ERROR:", error);
+            alert(error.message || "Network error");
+            return false;
+
+        }
+    },
+
+    authentication: async (otp: string) => {
+        try {
+            const response = await axiosInstance.put("api/user/auth", {
+                email: get().email,
+                otp: otp
+            });
+            
+            alert(response.data.message || "User authenticate successfully");
+            return true
+        } catch (error) {
+            console.log(error);
+            alert(error);
+            return false;
+        }
+    },
+
+    loginWithAuth: async () => {
+        try {
+            const response = await axiosInstance.get("api/user/me");
+            set({ user: response.data.user });
+            await AsyncStorage.setItem('token', response.data.token);
+            return true
+        } catch (error) {
+            console.log(error);
             alert(error);
             return false;
         }

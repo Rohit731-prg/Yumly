@@ -22,8 +22,9 @@ export const login = async (req, res) => {
 }
 
 export const signUp = async (req, res) => {
+    console.log("body: ", req.body)
     const { name, email, password} = req.body;
-    if (!name || !email || !password) return res.status(400).json({ message: "hj" });
+    if (!name || !email || !password) return res.status(400).json({ message: "name, email and password is require" });
     
     try {
         const is_exist = await UserModel.findOne({ email });
@@ -43,6 +44,7 @@ export const signUp = async (req, res) => {
         await newUser.save();
         return res.status(201).json({ message: "User create Successfully! Please check Email for verification" });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: error?.message });
     }
 }
@@ -64,6 +66,21 @@ export const authenticate = async (req, res) => {
         res.status(200).json({ message: "User authenticate successfully" });
     } catch (error) {
         return res.status(500).json({ message: error?.message });
+    }
+}
+
+export const updatePassword = async () => {
+    const { newPassword } = req.body;
+    try {
+        const user = req.user;
+        if (!user) return res.status(400).json({ message: "User not found" });
+
+        const hashPassword = await generatePassword(newPassword);
+        user.password = hashPassword;
+        await user.save();
+        res.status(200).json({ message: "Password update successfully" });
+    } catch (error) {
+        
     }
 }
 

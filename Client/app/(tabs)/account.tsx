@@ -1,10 +1,17 @@
 import { ScrollView, Image, StyleSheet, View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import useUserStore from "../../Store/UserStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 function Account() {
   const { user } = useUserStore();
 
+  const logout = async () => {
+    alert("Logging out...");
+    await AsyncStorage.removeItem("token");
+    router.replace("/login");
+  }
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       {/* Header Image */}
@@ -48,17 +55,17 @@ function Account() {
 
       {/* Buttons */}
 
-      <Pressable style={styles.button}>
+      {/* <Pressable style={styles.button}>
         <Ionicons name="image-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>Change Profile Image</Text>
-      </Pressable>
+      </Pressable> */}
 
       <Pressable style={styles.button}>
         <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>Change Password</Text>
       </Pressable>
 
-      <Pressable style={[styles.button, styles.logoutButton]} >
+      <Pressable style={[styles.button, styles.logoutButton]} onPress={logout} >
         <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>Logout</Text>
       </Pressable>
