@@ -69,7 +69,7 @@ export const authenticate = async (req, res) => {
     }
 }
 
-export const updatePassword = async () => {
+export const updatePassword = async (req, res) => {
     const { newPassword } = req.body;
     try {
         const user = req.user;
@@ -84,12 +84,13 @@ export const updatePassword = async () => {
     }
 }
 
-export const me = async () => {
+export const me = async (req, res) => {
     try {
         const user = req.user;
         const token = generateToken({ id: user?._id });
         res.status(200).json({ message: "Login Successful", user, token });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: error?.message });
     }
 }

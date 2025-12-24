@@ -1,16 +1,28 @@
-import { ScrollView, Image, StyleSheet, View, Text, Pressable } from "react-native";
+import { ScrollView, Image, StyleSheet, View, Text, Pressable, Modal, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import useUserStore from "../../Store/UserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { useState } from "react";
 
 function Account() {
-  const { user } = useUserStore();
+  const [loading, setLoading] = useState(false);
+  const [isModal, setIsModel] = useState<boolean>(false);
+  const { user, updatePassword } = useUserStore();
+  const [newPassword, setNewPassword] = useState<string>("");
 
   const logout = async () => {
     alert("Logging out...");
     await AsyncStorage.removeItem("token");
     router.replace("/login");
+  };
+
+  const handelPasswordChange = async () => {
+    setLoading(true);
+    await updatePassword(newPassword);
+    setNewPassword("");
+    setLoading(false);
+    setIsModel(false);
   }
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -60,7 +72,7 @@ function Account() {
         <Text style={styles.buttonText}>Change Profile Image</Text>
       </Pressable> */}
 
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={() => setIsModel(true)}>
         <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>Change Password</Text>
       </Pressable>
@@ -69,6 +81,44 @@ function Account() {
         <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
         <Text style={styles.buttonText}>Logout</Text>
       </Pressable>
+
+      <Modal
+        visible={isModal}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setIsModel(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Change Password</Text>
+
+            <TextInput
+              placeholder="Enter new password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+              style={styles.input}
+            />
+
+            <View style={styles.modalActions}>
+              <Pressable
+                style={[styles.modalButton, styles.cancelBtn]}
+                onPress={() => setIsModel(false)}
+              >
+                <Text style={styles.modalBtnText}>Cancel</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.modalButton, styles.saveBtn]}
+                onPress={handelPasswordChange}
+              >
+                <Text style={styles.modalBtnText}>{loading ? "Saving..." : "Save"}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
     </ScrollView>
   );
 }
@@ -143,6 +193,67 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  modalContainer: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    elevation: 10,
+  },
+
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+    color: "#111",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 16,
+    marginBottom: 20,
+  },
+
+  modalActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  modalButton: {
+    flex: 1,
+    height: 45,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  cancelBtn: {
+    backgroundColor: "#ccc",
+    marginRight: 10,
+  },
+
+  saveBtn: {
+    backgroundColor: "#2196f3",
+  },
+
+  modalBtnText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
 });
 
 export default Account;

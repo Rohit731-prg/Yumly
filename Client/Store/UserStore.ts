@@ -38,7 +38,8 @@ type Store = {
     login: (data: loginInterface) => Promise<boolean>,
     signUp: (data: signupInterface) => Promise<boolean>,
     authentication: (otp: string) => Promise<boolean>,
-    loginWithAuth: () => Promise<boolean>
+    loginWithAuth: () => Promise<boolean>,
+    updatePassword: (newPassword: string) => Promise<boolean>
 }
 
 const useUserStore = create<Store>()((set, get) => ({
@@ -93,9 +94,9 @@ const useUserStore = create<Store>()((set, get) => ({
             
             alert(response.data.message || "User authenticate successfully");
             return true
-        } catch (error) {
-            console.log(error);
-            alert(error);
+        } catch (error: any) {
+            console.log("error from authentication", error);
+            alert(error?.response?.data?.message || error?.message || "Something went wrong");
             return false;
         }
     },
@@ -105,6 +106,20 @@ const useUserStore = create<Store>()((set, get) => ({
             const response = await axiosInstance.get("api/user/me");
             set({ user: response.data.user });
             await AsyncStorage.setItem('token', response.data.token);
+            return true
+        } catch (error: any) {
+            console.log(error);
+            alert(error?.response?.data?.message || "Something went wrong");
+            return false;
+        }
+    },
+
+    updatePassword: async (newPassword: string) => {
+        try {
+            const response = await axiosInstance.put("api/user/updatePassword", {
+                newPassword
+            });
+            alert(response.data.message || "Password update successfully");
             return true
         } catch (error) {
             console.log(error);

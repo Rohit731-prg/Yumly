@@ -10,6 +10,7 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { useEffect, useState } from "react";
 import useUserStore from "../Store/UserStore";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 function Login() {
     const { login, loginWithAuth } = useUserStore();
@@ -33,6 +34,8 @@ function Login() {
     };
 
     const autoLogin = async () => {
+        const token = await AsyncStorage.getItem("token");
+        console.log(token);
         const result = await loginWithAuth();
         if (result) {
             router.push("/(tabs)/home");
