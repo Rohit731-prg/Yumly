@@ -1,17 +1,30 @@
-import { View, ScrollView, Pressable, Text, TextInput, Image, StyleSheet } from "react-native"
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Text,
+  TextInput,
+  Image,
+  StyleSheet,
+} from "react-native";
 import useRecipeStore from "../Store/RecipeStore";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { useState } from "react";
 
 function SearchList() {
-    const { recipes, setRecipe, name } = useRecipeStore();
-    const setRecipeFun = async (item: any) => {
-        await setRecipe(item);
-        router.push("/meal");
-      }
+  const { recipes, setRecipe, name } = useRecipeStore();
+  const setRecipeFun = async (item: any) => {
+    await setRecipe(item);
+    router.push("/meal");
+  };
 
+  const [search, setSearch] = useState("");
+  const filterRecipes = recipes?.filter((recipe) => {
+    return recipe.strMeal.toLowerCase().includes(search.toLowerCase())
+  })
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -28,6 +41,8 @@ function SearchList() {
         <View style={styles.searchBox}>
           <EvilIcons name="search" size={22} color="#6B7280" />
           <TextInput
+            value={search}
+            onChangeText={setSearch}
             placeholder="Search recipes"
             placeholderTextColor="#9CA3AF"
             style={styles.searchInput}
@@ -36,7 +51,7 @@ function SearchList() {
 
         {/* List */}
         <View style={styles.list}>
-          {recipes?.map((item) => (
+          {filterRecipes?.map((item) => (
             <Pressable
               key={item.idMeal}
               style={styles.card}
@@ -56,7 +71,7 @@ function SearchList() {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -138,4 +153,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchList
+export default SearchList;

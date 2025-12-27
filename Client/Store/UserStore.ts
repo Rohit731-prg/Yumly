@@ -57,7 +57,12 @@ const useUserStore = create<Store>()((set, get) => ({
             set({ user: response.data.user });
             return true;
         } catch (error: any) {
-            alert(error);
+            const message =
+                error?.response?.data?.message ||
+                error?.message ||
+                "Something went wrong";
+
+            alert(message);
             return false;
         }
     },
@@ -91,7 +96,7 @@ const useUserStore = create<Store>()((set, get) => ({
                 email: get().email,
                 otp: otp
             });
-            
+
             alert(response.data.message || "User authenticate successfully");
             return true
         } catch (error: any) {

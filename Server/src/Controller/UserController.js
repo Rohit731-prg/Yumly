@@ -17,6 +17,7 @@ export const login = async (req, res) => {
         const token = await generateToken({ id: user?._id });
         res.status(200).json({ message: "Login Successful", user, token });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: error?.message });
     }
 }
@@ -55,16 +56,17 @@ export const authenticate = async (req, res) => {
     
     try {
         const user = await UserModel.findOne({ email });
-        if (!user) return res,status(400).json({ message: "User not exist" });
+        if (!user) return res.status(400).json({ message: "User not exist" });
 
-        if (otp !== user?.otp) return res.status(404).json({ message: "Otp does not match" });
+        if (String(otp) !== String(user?.otp)) return res.status(404).json({ message: "Otp does not match" });
         const newSaveRecipe = new SaveRecipeModel({
             user: user?._id
         });
         await newSaveRecipe.save();
-        
+        await UserModel.updateOne({ _id: user?._id }, { $set: { auth: true }});
         res.status(200).json({ message: "User authenticate successfully" });
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: error?.message });
     }
 }

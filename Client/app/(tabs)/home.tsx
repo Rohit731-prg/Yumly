@@ -36,7 +36,7 @@ export default function Home() {
     recipes,
     countryList,
     getRecipeByName,
-    setRecipe
+    setRecipe,
   } = useRecipeStore();
   const { saveRecipes, getSaveRecipe } = useSaveRecipeStore();
 
@@ -70,9 +70,9 @@ export default function Home() {
   };
 
   const exploreFood = async (item: any) => {
-      await setRecipe(item);
-      router.push("/meal");
-  }
+    await setRecipe(item);
+    router.push("/meal");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,13 +89,17 @@ export default function Home() {
             <EvilIcons name="search" size={24} color="#666" />
             <TextInput
               value={name}
-              onChangeText={(text) => setName(text)}
+              onChangeText={setName}
               placeholder="Search recipes"
               style={styles.input}
+              numberOfLines={1}
             />
           </View>
+
           <Pressable style={styles.searchBtn} onPress={searchRecipeFun}>
-            <Text style={styles.searchText}>{loading ? "Search..." : "Search"}</Text>
+            <Text style={styles.searchText}>
+              {loading ? "Search..." : "Search"}
+            </Text>
           </Pressable>
         </View>
 
@@ -138,10 +142,14 @@ export default function Home() {
 
         {/* RECIPES */}
         <View style={styles.recipeRow}>
-          {recipes ? (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {recipes.map((recipe, index) => (
-                <Pressable onPress={() => exploreFood(recipe)} key={index} style={styles.recipeCard}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {recipes &&
+              recipes.map((recipe, index) => (
+                <Pressable
+                  onPress={() => exploreFood(recipe)}
+                  key={index}
+                  style={styles.recipeCard}
+                >
                   <Image
                     source={{ uri: recipe.strMealThumb }}
                     style={styles.recipeImage}
@@ -151,10 +159,7 @@ export default function Home() {
                   </Text>
                 </Pressable>
               ))}
-            </ScrollView>
-          ) : (
-            <Text>Loading...</Text>
-          )}
+          </ScrollView>
         </View>
 
         {/* SAVED RECIPES */}
@@ -216,10 +221,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+    flex: 1, // ⭐ REQUIRED
   },
+
   input: {
     fontSize: 14,
+    flex: 1, // ⭐ REQUIRED
   },
+
   searchBtn: {
     borderLeftWidth: 2,
     borderLeftColor: "black",

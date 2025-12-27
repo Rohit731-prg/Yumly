@@ -14,15 +14,20 @@ import useRecipeStore from "../../Store/RecipeStore";
 import useSaveRecipeStore from "../../Store/SaveRecipeStore";
 import Feather from "@expo/vector-icons/Feather";
 import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 function saveRecipe() {
   const { saveRecipes, getSaveRecipe } = useSaveRecipeStore();
   const { setRecipe } = useRecipeStore();
+  const [search, setSearch] = useState("")
   const setRecipeFun = async (item: any) => {
     await setRecipe(item);
     router.push("/meal");
   };
+
+  const filterRecipes = (saveRecipes ?? [])?.filter((recipe) => {
+    return recipe?.strMeal?.toLowerCase().includes(search.toLowerCase());
+  })
 
   useFocusEffect(
     useCallback(() => {
@@ -43,6 +48,8 @@ function saveRecipe() {
         <View style={styles.searchBox}>
           <EvilIcons name="search" size={22} color="#6B7280" />
           <TextInput
+            value={search}
+            onChangeText={setSearch}
             placeholder="Search recipes"
             placeholderTextColor="#9CA3AF"
             style={styles.searchInput}
@@ -52,7 +59,7 @@ function saveRecipe() {
         {/* List */}
         <View style={styles.list}>
           {saveRecipes &&
-            saveRecipes?.map((item) => (
+            filterRecipes?.map((item) => (
               <Pressable
                 key={item.idMeal}
                 style={styles.card}
