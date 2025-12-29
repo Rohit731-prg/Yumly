@@ -125,7 +125,7 @@ const useRecipeStore = create<Store>()((set, get) => ({
             set({
                 recipeDetail: {
                     ...response?.data?.meal,
-                    strYoutube: videoId, // store ONLY the ID
+                    strYoutube: videoId,
                 },
             });
         } catch (error: any) {

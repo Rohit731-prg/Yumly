@@ -9,11 +9,11 @@ import {
   Pressable,
 } from "react-native";
 import { useEffect } from "react";
-import { WebView } from "react-native-webview";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import useSaveRecipeStore from "../Store/SaveRecipeStore";
 import LottieView from "lottie-react-native";
 import loading from "../assets/loading1.json";
+import YoutubePlayer from "react-native-youtube-iframe";
 
 function Meal() {
   const { recipeDetail, setRecipeDetail } = useRecipeStore();
@@ -52,12 +52,10 @@ function Meal() {
             <Text style={style.sectionTitle}>Video</Text>
             {recipeDetail?.strYoutube && (
               <View style={{ height: 220, marginTop: 16 }}>
-                <WebView
-                  source={{
-                    uri: `https://www.youtube-nocookie.com/embed/${recipeDetail.strYoutube}?rel=0&modestbranding=1`,
-                  }}
-                  allowsFullscreenVideo
-                  javaScriptEnabled
+                <YoutubePlayer
+                  videoId={recipeDetail?.strYoutube}
+                  height={220}
+                  play={true}
                 />
               </View>
             )}
